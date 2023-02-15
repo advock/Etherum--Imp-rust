@@ -22,5 +22,28 @@ impl Valids {
                 i += 1;
             }
         }
+        Valids(valids);
+    }
+
+    #[inline]
+    pub fn len(&self) -> usize {
+        self.0.len()
+    }
+
+    #[inline]
+    pub fn is_empty(&self) -> bool {
+        self.len() == 0
+    }
+
+    pub fn is_valid(&self) -> bool {
+        if position >= self.0.len() {
+            return false;
+        }
+
+        if !self.0[position] {
+            return false;
+        }
+
+        true
     }
 }
