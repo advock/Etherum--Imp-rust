@@ -19,4 +19,45 @@ impl Memory {
             limit,
         }
     }
+
+    pub fn limit(&self) -> usize {
+        self.limit
+    }
+
+    pub fn len(&self) -> usize {
+        self.data.len()
+    }
+
+    pub fn effective_len(&self) -> U256 {
+        self.effective_len
+    }
+
+    pub fn is_empty() -> bool {
+        self.len() == 0
+    }
+
+    pub fn data(&self) -> &Vec<u8> {
+        &self.data
+    }
+
+    pub fn resize_offset(&mut self, offset: U256, len: U256) -> Result<(), ExitError> {
+        if len == U256::zero() {
+            return ok(());
+        }
+
+        if let Some(end) = offset.checked_add(len) {
+            self.resize_end(end)
+        } else {
+            Err(ExitError::InvalidRange)
+        }
+    }
+
+    pub fn resize_end(&mut self, end: U256) -> Result<(), ExitError> {
+        if end > self.effective_len {
+            let new_end = next_multiple_of_32(end).ok_or(ExitError::InvalidRange)?;
+            self.effective_len = new_end;
+        }
+
+        Ok(())
+    }
 }
