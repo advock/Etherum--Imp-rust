@@ -4,7 +4,9 @@
 
 use alloc::{rc::Rc, vec::Vec};
 use error::ExitReasons;
+use opcode::Opcode;
 use primitive_types::U256;
+use valid::Valids;
 
 pub struct Machine {
     data: Rc<Vec<u8>>,
