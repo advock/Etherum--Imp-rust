@@ -22,7 +22,7 @@ impl Valids {
                 i += 1;
             }
         }
-        Valids(valids);
+        Valids(valids)
     }
 
     #[inline]
