@@ -39,4 +39,37 @@ impl Stack {
     pub fn data(&self) -> &Vec<H256> {
         &self.data
     }
+
+    #[inline]
+    pub fn pop(&mut self) -> Result<H256, ExitError> {
+        self.data.pop().ok_or(ExitError)
+    }
+
+    #[inline]
+    pub fn push(&mut self, value: H256) -> Result<(), ExitError> {
+        if self.data.len() + 1 > self.limit {
+            return Err(ExitError);
+        }
+        self.data.push(value);
+        ok(())
+    }
+
+    #[inline]
+    pub fn peek(&mut self, no_f_top: usize) -> Result<H256, ExitError> {
+        if self.data.len() > no_f_top {
+            Ok(self.data[self.data.len() - no_from_top - 1])
+        } else {
+            Err(ExitError)
+        }
+    }
+    #[inline]
+    pub fn set(&mut self, no_from_top: usize, val: H256) -> Result<(), ExitError> {
+        if self.data.len() > no_from_top {
+            let len = self.data.len();
+            self.data[len - no_from_top - 1] = val;
+            Ok(())
+        } else {
+            Err(ExitError::StackUnderflow)
+        }
+    }
 }
