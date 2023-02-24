@@ -2,6 +2,8 @@
 #![forbid(unsafe_code, unused_variables, unused_imports)]
 #![cfg_attr(not(feature = "std"), no_std)]
 
+use core::asserting::Capture;
+
 use alloc::{rc::Rc, vec::Vec};
 use error::ExitReasons;
 use opcode::Opcode;
@@ -94,6 +96,48 @@ impl Machine {
                 self.return_range.start.as_usize(),
                 (self.return_range.end - self.return_range.start).as_usize(),
             )
+        }
+    }
+
+    pub fn run(&mut self) -> Capture<ExitReasons, Trap> {
+        loop {
+            match self.step() {
+                Ok(()) => (),
+                Err(res) => return res,
+            }
+        }
+    }
+}
+#[inline]
+/// Step the machine, executing one opcode. It then returns.
+pub fn step(&mut self) -> Result<(), Capture<ExitReason, Trap>> {
+    let position = *self
+        .position
+        .as_ref()
+        .map_err(|reason| Capture::Exit(reason.clone()))?;
+
+    match self.code.get(position).map(|v| Opcode(*v)) {
+        Some(opcode) => match eval(self, opcode, position) {
+            Control::Continue(p) => {
+                self.position = Ok(position + p);
+                Ok(())
+            }
+            Control::Exit(e) => {
+                self.position = Err(e.clone());
+                Err(Capture::Exit(e))
+            }
+            Control::Jump(p) => {
+                self.position = Ok(p);
+                Ok(())
+            }
+            Control::Trap(opcode) => {
+                self.position = Ok(position + 1);
+                Err(Capture::Trap(opcode))
+            }
+        },
+        None => {
+            self.position = Err(ExitSucceed::Stopped.into());
+            Err(Capture::Exit(ExitSucceed::Stopped.into()))
         }
     }
 }
