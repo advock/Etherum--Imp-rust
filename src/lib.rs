@@ -109,7 +109,7 @@ impl Machine {
     }
 }
 #[inline]
-/// Step the machine, executing one opcode. It then returns.
+
 pub fn step(&mut self) -> Result<(), Capture<ExitReason, Trap>> {
     let position = *self
         .position
