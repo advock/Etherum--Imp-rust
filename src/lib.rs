@@ -57,9 +57,43 @@ impl Machine {
             code,
             position: Ok(0),
             returnRange: U256::zero()..U256::zero(),
-            valids: (),
-            memory: (),
-            stack: (),
+            valids,
+            memory: Memory::new(memory_limit),
+            stack: Stack::new(stack_limit),
+        }
+    }
+
+    pub fn exit(&mut self, reason: ExitReason) {
+        self.position = Err(reason);
+    }
+
+    pub fn inspect(&self) -> Option<(Opcode, &Stack)> {
+        let position = match self.position {
+            Ok(position) => position,
+            Err(_) => return None,
+        };
+        self.code.get(position).map(|v| (Opcode(*v), &self.stack))
+    }
+
+    pub fn return_value(&self) -> Vec<u8> {
+        if self.returnRange.start > U256::from(usize::MAX) {
+            let mut x = Vec::new();
+            x.resize((self.returnRange.end - self.returnRange.start), 0);
+            x
+        } else if self.returnRange.end > U256::from(usize::MAX) {
+            let mut x = self.memory.get(
+                self.returnRange.start.as_usize(),
+                usize::MAX - self.return_range.start.as_usize(),
+            );
+            while ret.len() < (self.return_range.end - self.return_range.start).as_usize() {
+                ret.push(0);
+            }
+            x
+        } else {
+            self.memory.get(
+                self.return_range.start.as_usize(),
+                (self.return_range.end - self.return_range.start).as_usize(),
+            )
         }
     }
 }
