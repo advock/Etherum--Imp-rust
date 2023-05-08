@@ -10,9 +10,9 @@ checksum = "8da52d66c7071e2e3fa2a1e5c6d088fec47b593032b254f5e980de8ea54454d6"
 
 [[package]]
 name = "auto_impl"
-version = "1.0.1"
+version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8a8c1df849285fbacd587de7818cc7d13be6cd2cbcd47a04fb1801b0e2706e33"
+checksum = "fee3da8ef1276b0bee5dd1c7258010d8fffd31801447323115a25560e1327b89"
 dependencies = [
  "proc-macro-error",
  "proc-macro2",
